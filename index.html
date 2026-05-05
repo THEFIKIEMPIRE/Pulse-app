@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PULSE | AUTO-HIRE SYSTEM</title>
+    <style>
+        :root { --primary: #8B5CF6; --bg: #ffffff; --text: #111827; --sub: #6B7280; --gold: #D4AF37; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        .progress-container { width: 100%; height: 6px; background: #f3f4f6; position: fixed; top: 0; z-index: 1000; display: none; }
+        #progress-bar { width: 0%; height: 100%; background: var(--primary); transition: 0.4s; }
+        .screen { display: none; padding: 30px; min-height: 100vh; flex-direction: column; justify-content: center; text-align: center; box-sizing: border-box; }
+        .screen.active { display: flex; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .hero-title { font-size: 3.5rem; font-weight: 900; margin-bottom: 15px; letter-spacing: -3px; line-height: 1; }
+        .hero-title span { color: var(--primary); }
+        
+        .btn-primary { 
+            background: var(--primary); color: white; padding: 18px 15px; border-radius: 50px; 
+            font-weight: 700; border: none; font-size: 1rem; cursor: pointer; 
+            width: 100%; box-sizing: border-box; transition: 0.3s; display: block; 
+            margin: 0 auto; text-decoration: none; text-align: center;
+        }
+
+        .option-btn { border: 2px solid #f3f4f6; background: white; padding: 18px; border-radius: 18px; margin-bottom: 12px; font-weight: 600; font-size: 1rem; text-align: left; cursor: pointer; width: 100%; max-width: 400px; align-self: center; color: var(--text); }
+        .btn-back { background: transparent; color: var(--sub); border: none; padding: 10px; margin-top: 20px; font-weight: 600; cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
+        input, select { width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #f3f4f6; font-size: 1rem; margin-bottom: 15px; box-sizing: border-box; background: #fafafa; max-width: 400px; align-self: center; outline: none; }
+        
+        .card { background: #fafafa; border: 1px solid #f3f4f6; border-radius: 30px; padding: 25px; margin-bottom: 20px; text-align: left; box-sizing: border-box; overflow: hidden; }
+        
+        .feature-label { font-size: 0.75rem; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+        .blueprint-box { border-left: 4px solid var(--gold); padding: 5px 0 5px 15px; font-style: italic; color: #374151; font-size: 0.95rem; line-height: 1.5; }
+        .hustle-input { margin-top: 10px; border-color: #e5e7eb; width: 100%; }
+
+        textarea { width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #f3f4f6; font-size: 1rem; margin-bottom: 15px; box-sizing: border-box; background: #fafafa; max-width: 400px; align-self: center; outline: none; font-family: inherit; resize: none; }
+        .score-circle { width: 100px; height: 100px; border-radius: 50%; border: 8px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; margin: 0 auto 20px; color: var(--primary); }
+        .pro-tip { font-size: 0.85rem; color: #4b5563; margin-bottom: 10px; padding-left: 5px; }
+        .pro-tip::before { content: "- "; color: var(--gold); font-weight: bold; }
+        .success-step { border-bottom: 1px solid #eee; padding: 12px 0; font-size: 0.9rem; }
+        .success-step b { color: var(--primary); display: block; margin-bottom: 4px; }
+
+        .badge-pill { background: #F5F3FF; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; display: inline-block; border: 1px solid #DDD6FE; }
+        .flex-card { background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%); color: white; padding: 20px; border-radius: 20px; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="progress-container" id="pc"><div id="progress-bar"></div></div>
+
+    <div class="screen active" id="s-home">
+        <h1 class="hero-title">Own Your <span>Future.</span></h1>
+        <p style="color:var(--sub); margin-bottom:20px; max-width: 450px; align-self: center; line-height: 1.6;">Pulse is the premier career assistant designed to bridge gap between talent and high-value employers. Stop scrolling through thousands of listings.</p>
+        <p style="color:var(--sub); margin-bottom:40px; max-width: 450px; align-self: center; line-height: 1.6;">Our proprietary logic analyzes personality, energy peaks, and local market trends to place you in roles where you thrive. 10 questions. Total clarity. Your path starts now.</p>
+        <button class="btn-primary" style="max-width:350px;" onclick="next('s-onboarding')">Begin Onboarding</button>
+    </div>
+
+    <div class="screen" id="s-onboarding">
+        <h2 style="margin-bottom:20px;">Profile Setup</h2>
+        <input type="text" id="u-name" placeholder="Full Name">
+        <input type="email" id="u-email" placeholder="Email Address">
+        <select id="u-country" onchange="updateProvinces()">
+            <option value="">Select Country</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="Canada">Canada</option>
+            <option value="UK">United Kingdom</option>
+        </select>
+        <select id="u-prov" onchange="updateCities()" disabled><option value="">Select State/Province</option></select>
+        <select id="u-city" disabled><option value="">Select City</option></select>
+        <button class="btn-primary" style="max-width:350px;" onclick="startQuiz()">Initialize Quiz</button>
+        <button class="btn-back" onclick="next('s-home')">Back to Home</button>
+    </div>
+
+    <div id="quiz-block">
+        <div class="screen" id="q1">
+            <h2>Which industry calls to you?</h2>
+            <select id="industry-select" style="margin-bottom: 20px;">
+                <option value="Retail">Retail and Customer Service</option>
+                <option value="Food">Food and Hospitality</option>
+                <option value="Tech">Technology and Software</option>
+                <option value="Health">Healthcare and Wellness</option>
+                <option value="Creative">Creative, Fashion and Design</option>
+                <option value="Admin">Office and Admin</option>
+                <option value="Trade">Skilled Trades</option>
+            </select>
+            <button class="btn-primary" style="max-width:350px;" onclick="save(0, document.getElementById('industry-select').value, 'q2')">Continue</button>
+            <button class="btn-back" onclick="next('s-onboarding')">Back</button>
+        </div>
+        <div class="screen" id="q2"><h2>In group project, you are...</h2><button class="option-btn" onclick="save(1, 'Lead', 'q3')">Leader/Manager</button><button class="option-btn" onclick="save(1, 'Design', 'q3')">Visual Designer</button><button class="option-btn" onclick="save(1, 'Research', 'q3')">Researcher</button><button class="btn-back" onclick="next('q1')">Back</button></div>
+        
+        <div class="screen" id="q3">
+            <h2>What is your ideal work environment?</h2>
+            <button class="option-btn" onclick="save(2, 'Structured', 'q4')">Corporate and Structured</button>
+            <button class="option-btn" onclick="save(2, 'Fast', 'q4')">Startup and Fast-Paced</button>
+            <button class="option-btn" onclick="save(2, 'Remote', 'q4')">Flexible and Remote-first</button>
+            <button class="btn-back" onclick="next('q2')">Back</button>
+        </div>
+
+        <div class="screen" id="q4"><h2>Which area of expertise do you value?</h2><button class="option-btn" onclick="save(3, 'Creative', 'q5')">Creative Arts</button><button class="option-btn" onclick="save(3, 'Logic', 'q5')">Logical Reasoning</button><button class="option-btn" onclick="save(3, 'People', 'q5')">Human Connection</button><button class="btn-back" onclick="next('q3')">Back</button></div>
+        <div class="screen" id="q5"><h2>Energy profile?</h2><button class="option-btn" onclick="save(4, 'Morning', 'q6')">Early Bird</button><button class="option-btn" onclick="save(4, 'Afternoon', 'q6')">Peak Performer</button><button class="option-btn" onclick="save(4, 'Night', 'q6')">Night Owl</button><button class="btn-back" onclick="next('q4')">Back</button></div>
+        <div class="screen" id="q6"><h2>How do you solve complex problems?</h2><button class="option-btn" onclick="save(5, 'Special', 'q7')">Through manual building</button><button class="option-btn" onclick="save(5, 'Solutions', 'q7')">Through logical analysis</button><button class="btn-back" onclick="next('q5')">Back</button></div>
+        
+        <div class="screen" id="q7">
+            <h2>What work vibe are you looking for?</h2>
+            <button class="option-btn" onclick="save(6, 'Corporate', 'q8')">Formal and Professional</button>
+            <button class="option-btn" onclick="save(6, 'Active', 'q8')">Energetic and Hands-on</button>
+            <button class="btn-back" onclick="next('q6')">Back</button>
+        </div>
+
+        <div class="screen" id="q8">
+            <h2>Which hobby do you spend most time on?</h2>
+            <button class="option-btn" onclick="save(7, 'Fashion', 'q9')">Fashion and Styling</button>
+            <button class="option-btn" onclick="save(7, 'Tech', 'q9')">Coding or Web Design</button>
+            <button class="option-btn" onclick="save(7, 'Sports', 'q9')">Sports or Fitness</button>
+            <button class="option-btn" onclick="save(7, 'Gaming', 'q9')">Gaming and Strategy</button>
+            <button class="option-btn" onclick="save(7, 'Reading', 'q9')">Research and Learning</button>
+            <button class="btn-back" onclick="next('q7')">Back</button>
+        </div>
+
+        <div class="screen" id="q9"><h2>1-year goal?</h2><button class="option-btn" onclick="save(8, 'Stable', 'q10')">Building professional network</button><button class="option-btn" onclick="save(8, 'Expert', 'q10')">Becoming expert in my role</button><button class="btn-back" onclick="next('q8')">Back</button></div>
+        <div class="screen" id="q10"><h2>What is your main goal for this job?</h2><button class="option-btn" onclick="save(9, 'Career', 'results')">Building long-term career</button><button class="option-btn" onclick="save(9, 'Income', 'results')">Earning high steady income</button><button class="btn-back" onclick="next('q9')">Back</button></div>
+    </div>
+
+    <div class="screen" id="s-auditor">
+        <h2 style="margin-bottom:10px;">Pulse Resume Auditor</h2>
+        <p style="color:var(--sub); margin-bottom:30px;">Paste resume text below for Sovereign Score.</p>
+        <textarea id="resume-input" rows="8" placeholder="Paste resume content here..."></textarea>
+        <button class="btn-primary" style="max-width:350px;" onclick="auditResume()">Audit Resume</button>
+        <button class="btn-back" onclick="next('s-results')">Skip for now</button>
+    </div>
+
+    <div class="screen" id="s-results" style="text-align: left; justify-content: flex-start; padding-top: 60px; padding-bottom: 50px;">
+        <h2 id="res-title">Results</h2>
+        
+        <div id="fit-score-badge" class="badge-pill">94% Fit Score</div>
+
+        <div class="card">
+            <span class="feature-label">Career Match</span>
+            <div id="job-match" style="font-weight:800; font-size:1.4rem; color:var(--primary); margin-bottom: 15px;"></div>
+            
+            <div style="background: #FFFBEB; border: 1px solid #FEF3C7; padding: 10px; border-radius: 12px; margin-bottom: 15px; font-size: 0.85rem;">
+                <span style="color: #92400E; font-weight: 800;">SALARY RADAR:</span> 
+                <span id="salary-radar-text" style="color: #92400E;">Checking local rates...</span>
+            </div>
+
+            <a id="apply-link" href="#" target="_blank" class="btn-primary">Launch Indeed Application</a>
+            
+            <div style="margin-top:15px;">
+                <button class="btn-primary" style="background: #ffffff; color: var(--primary); border: 2px solid var(--primary);" onclick="copySquadLink()">Apply with Squad</button>
+                <p style="font-size: 0.75rem; color: var(--sub); text-align: center; margin-top: 8px;">Invite friends to apply to the same location to increase hiring chances.</p>
+            </div>
+            
+            <button class="btn-primary" style="margin-top:15px; background:#111827;" onclick="next('s-auditor')">Audit My Resume</button>
+        </div>
+
+        <div class="card" id="audit-card" style="display:none;">
+            <span class="feature-label">Resume Health Score</span>
+            <div class="score-circle" id="resume-score">0%</div>
+            <div id="audit-feedback"></div>
+        </div>
+
+        <div class="card">
+            <span class="feature-label">Resume Summary Architect</span>
+            <div id="res-summary" class="blueprint-box"></div>
+        </div>
+
+        <div class="card">
+            <span class="feature-label">Sovereign Resume Tips</span>
+            <div class="pro-tip"><b>Quantify Wins:</b> Don't just say you worked hard. Say "Assisted 50+ clients daily."</div>
+            <div class="pro-tip"><b>Active Verbs:</b> Use "Executed" or "Managed" instead of "I was responsible for."</div>
+            <div class="pro-tip"><b>Clean Layout:</b> Use standard 10-12pt font. Avoid photos or complex graphics.</div>
+        </div>
+
+        <div class="card">
+            <span class="feature-label">Interview Strategy Playbook</span>
+            <div id="interview-prep"></div>
+        </div>
+
+        <div class="card">
+            <span class="feature-label">Rejection Reversal Script</span>
+            <p style="font-size: 0.8rem; color: var(--sub); margin-bottom: 10px;">Got rejected? Send this to stay on top of the pile:</p>
+            <div class="blueprint-box">"Hi, thank you for the update. If your selected candidate doesn't work out in the first 2 weeks, please keep me on file."</div>
+        </div>
+
+        <div class="card">
+            <span class="feature-label">Walk-In Strategy Blueprint</span>
+            <div id="walk-in-plan" class="blueprint-box"></div>
+        </div>
+
+        <div class="card">
+            <span class="feature-label">Viral Flex Card</span>
+            <div class="flex-card">
+                <h3 style="margin:0; font-size: 1.2rem;">I GOT HIRED!</h3>
+                <p style="font-size: 0.8rem; opacity: 0.9;">Placed via PULSE System</p>
+                <div style="font-weight: 800; font-size: 1.1rem; margin: 10px 0;" id="flex-job">Retail Specialist</div>
+                <button style="background: white; color: var(--primary); border: none; padding: 8px 15px; border-radius: 10px; font-weight: 800; font-size: 0.7rem;" onclick="shareToStory()">Share Results</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="feature-label">90-Day Success Map</span>
+            <div class="success-step"><b>Month 1:</b> Master core duties and learn everyone's name.</div>
+            <div class="success-step"><b>Month 2:</b> Identify business problem and propose solution.</div>
+            <div class="success-step"><b>Month 3:</b> Request performance review to secure growth.</div>
+        </div>
+
+        <div class="card">
+            <span class="feature-label">Hustle Income Tracker</span>
+            <input type="text" id="h-goal" class="hustle-input" placeholder="What are you saving for?">
+            <input type="number" id="h-amount" class="hustle-input" placeholder="Target Amount">
+        </div>
+
+        <button class="btn-back" onclick="next('q10')">Back to Quiz</button>
+    </div>
+
+    <script>
+        let answers = [];
+        const locationData = {
+            "Nigeria": {
+                "Abia": ["Aba", "Umuahia"], "Adamawa": ["Yola", "Mubi"], "Akwa Ibom": ["Uyo", "Ikot Ekpene"], "Anambra": ["Awka", "Onitsha"], "Bauchi": ["Bauchi"], "Bayelsa": ["Yenagoa"], "Benue": ["Makurdi"], "Borno": ["Maiduguri"], "Cross River": ["Calabar"], "Delta": ["Warri", "Asaba"], "Ebonyi": ["Abakaliki"], "Edo": ["Benin City"], "Ekiti": ["Ado Ekiti"], "Enugu": ["Enugu"], "FCT": ["Abuja", "Gwagwalada"], "Gombe": ["Gombe"], "Imo": ["Owerri"], "Jigawa": ["Dutse"], "Kaduna": ["Kaduna", "Zaria"], "Kano": ["Kano"], "Katsina": ["Katsina"], "Kebbi": ["Birnin Kebbi"], "Kogi": ["Lokoja"], "Kwara": ["Ilorin"], "Lagos": ["Ikeja", "Lekki", "Surulere", "Victoria Island", "Yaba", "Badagry", "Ikorodu"], "Nasarawa": ["Lafia"], "Niger": ["Minna"], "Ogun": ["Abeokuta", "Sango Ota", "Ijebu Ode"], "Ondo": ["Akure"], "Osun": ["Osogbo"], "Oyo": ["Ibadan", "Ogbomosho", "Oyo City"], "Plateau": ["Jos"], "Rivers": ["Port Harcourt", "Obio-Akpor"], "Sokoto": ["Sokoto"], "Taraba": ["Jalingo"], "Yobe": ["Damaturu"], "Zamfara": ["Gusau"]
+            },
+            "Canada": {
+                "Ontario": ["Toronto", "Ottawa", "Mississauga", "Brampton", "Innisfil"], "Alberta": ["Calgary", "Edmonton"], "Quebec": ["Montreal", "Quebec City"], "BC": ["Vancouver", "Victoria"], "Manitoba": ["Winnipeg"], "Saskatchewan": ["Saskatoon", "Regina"], "Nova Scotia": ["Halifax"], "New Brunswick": ["Moncton", "Saint John"]
+            },
+            "UK": {
+                "London": ["Central London", "Greenwich"], "Manchester": ["City Centre", "Salford"], "Birmingham": ["Solihull", "City Centre"], "Kent": ["Maidstone", "Canterbury"], "Surrey": ["Guildford", "Woking"]
+            }
+        };
+        function updateProvinces() {
+            const c = document.getElementById('u-country').value;
+            const p = document.getElementById('u-prov');
+            p.innerHTML = '<option value="">Select State/Province</option>';
+            if(c && locationData[c]) { p.disabled = false; Object.keys(locationData[c]).sort().forEach(s => p.innerHTML += `<option value="${s}">${s}</option>`); }
+        }
+        function updateCities() {
+            const c = document.getElementById('u-country').value;
+            const p = document.getElementById('u-prov').value;
+            const city = document.getElementById('u-city');
+            city.innerHTML = '<option value="">Select City</option>';
+            if(p && locationData[c][p]) { city.disabled = false; locationData[c][p].sort().forEach(ct => city.innerHTML += `<option value="${ct}">${ct}</option>`); }
+        }
+        function save(i, val, nextId) {
+            answers[i] = val;
+            if(nextId === 'results') showResults(); else next(nextId);
+        }
+        function next(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id.startsWith('q')) {
+                let n = parseInt(id.replace('q', ''));
+                document.getElementById('progress-bar').style.width = (n * 10) + '%';
+            }
+        }
+        function startQuiz() {
+            if(!document.getElementById('u-city').value) return alert("Select city!");
+            document.getElementById('pc').style.display = 'block';
+            next('q1');
+        }
+
+        function auditResume() {
+            const text = document.getElementById('resume-input').value.toLowerCase();
+            if(!text) return alert("Paste resume text!");
+            
+            let score = 0;
+            const keywords = ['managed', 'executed', 'built', 'increased', 'developed', 'customer', 'professional', 'solved', 'efficient'];
+            keywords.forEach(word => { if(text.includes(word)) score += 11; });
+            if(text.length > 300) score += 10;
+            
+            const finalScore = Math.min(score, 100);
+            document.getElementById('audit-card').style.display = 'block';
+            document.getElementById('resume-score').innerText = finalScore + '%';
+            
+            let feedback = finalScore === 100 ? "Perfect! Your resume is professional." : "Improvement needed: Add action verbs like 'Executed' or 'Managed'.";
+            document.getElementById('audit-feedback').innerHTML = `<p style="font-size:0.9rem; margin-top:10px;">${feedback}</p>`;
+            
+            next('s-results');
+            window.scrollTo(0, 0);
+        }
+
+        function copySquadLink() {
+            const msg = "Yo! I'm using Pulse to get hired fast. Let's apply as a squad! Join me here: " + window.location.href;
+            navigator.clipboard.writeText(msg).then(() => {
+                alert("Squad Link Copied! Send this to friends to apply together.");
+            });
+        }
+
+        function shareToStory() {
+            const industry = answers[0] || "Retail";
+            if (navigator.share) {
+                navigator.share({
+                    title: 'PULSE Career System',
+                    text: 'I just got matched as a ' + industry + ' Specialist using the Pulse System! Check your match here:',
+                    url: window.location.href
+                }).catch(err => console.log('Error sharing', err));
+            } else {
+                alert("Sharing not supported on this browser. Copy the link to share!");
+            }
+        }
+
+        function showResults() {
+            const name = document.getElementById('u-name').value;
+            const city = document.getElementById('u-city').value;
+            const industry = answers[0] || "Retail";
+            const hobby = answers[7] || "Design";
+            
+            const salaries = {"Retail": "+$0.75", "Tech": "+$2.50", "Food": "+$0.40", "Trade": "+$1.80"};
+            document.getElementById('salary-radar-text').innerText = `Employers in ${city} for ${industry} are paying ${salaries[industry] || "+$0.50"}/hr above average.`;
+            document.getElementById('flex-job').innerText = `${industry} Specialist`;
+
+            document.getElementById('res-title').innerText = `${name}'s Path`;
+            document.getElementById('job-match').innerText = `${industry} Specialist`;
+            document.getElementById('res-summary').innerText = `Motivated professional with background in ${hobby}. Passionate about ${industry} industry and looking to build stable career in ${city}.`;
+            document.getElementById('walk-in-plan').innerText = `Go to local businesses in ${city} on Tuesday at 2:00 PM. Ask for manager and say: "Hi, I'm ${name}. I applied for ${industry} role online, and wanted to introduce myself and drop off resume in person."`;
+            
+            const questions = {
+                "Retail": "Q: How do you handle difficult customer? <br><b>A: I listen, empathize, and find solution without taking it personally.</b>",
+                "Tech": "Q: How do you handle bug you can't fix? <br><b>A: I research documentation, consult team, and break it down into smaller parts.</b>",
+                "Food": "Q: How do you handle rush? <br><b>A: I stay focused, prioritize tickets, and communicate clearly with team.</b>"
+            };
+            document.getElementById('interview-prep').innerHTML = `<div class="blueprint-box">${questions[industry] || questions["Retail"]}</div>`;
+
+            const domain = document.getElementById('u-country').value === "Canada" ? "ca.indeed.com" : "ng.indeed.com";
+            document.getElementById('apply-link').href = `https://${domain}/jobs?q=${industry}&l=${city}`;
+            next('s-results');
+        }
+    </script>
+</body>
+</html>
